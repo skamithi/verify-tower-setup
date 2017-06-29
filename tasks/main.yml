@@ -1,0 +1,7 @@
+---
+# tasks file for verify-tower-setup
+- name: "get api status on port {{ tower_ui_mgmt_port }}"
+- name: "verify that ha is enabled"
+- name: "verify that number of hosts matches requirements of RabbitMQ cluster (3,5,7...)"
+- name: "verify that the postgres db is reachable"
+- name: "verify that rabbitmq status is working"

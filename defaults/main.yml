@@ -1,0 +1,4 @@
+---
+# defaults file for verify-tower-setup
+
+tower_ui_mgmt_port: 80
