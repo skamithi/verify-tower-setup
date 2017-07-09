@@ -11,7 +11,9 @@ Requirements
 Role Variables
 --------------
 
-* tower_web_mgmt_port: Default is ``443``. Change this value to ``80``, if ``disable_https=True`` is used in the tower setup [all:vars] settings. 
+* ``tower_ui_mgmt_port``: Default is ``443``. Change this value to ``80``, if ``disable_https=True`` is used in the tower setup [all:vars] settings.
+
+* ``tower_web_ui_ssl``: Default to ``true``. Set this is false to use the http protocol to access the Tower API
 
 Dependencies
 ------------

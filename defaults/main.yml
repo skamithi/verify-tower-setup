@@ -1,4 +1,5 @@
 ---
 # defaults file for verify-tower-setup
 
-tower_ui_mgmt_port: 80
+tower_ui_mgmt_port: 443
+tower_ui_use_ssl: true

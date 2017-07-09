@@ -1,7 +1,30 @@
 ---
 # tasks file for verify-tower-setup
-- name: "get api status on port {{ tower_ui_mgmt_port }}"
-- name: "verify that ha is enabled"
-- name: "verify that number of hosts matches requirements of RabbitMQ cluster (3,5,7...)"
-- name: "verify that the postgres db is reachable"
-- name: "verify that rabbitmq status is working"
+- name: set whether to use http or https
+  set_fact:
+    api_url_prefix: "{{ 'https' if tower_ui_use_ssl else 'http' }}"
+- name: "get api listing"
+  uri:
+    url: "{{ api_url_prefix }}://localhost/api/v1/"
+    validate_certs: false
+  register: api_groups
+
+- name: set fact for URL to get Tower status
+  set_fact:
+    api_ping_uri: "{{ api_groups.json.ping }}"
+
+- name: get tower status
+  uri:
+    url: "{{ api_url_prefix}}://localhost/{{api_ping_uri}}"
+    validate_certs: false
+  register: tower_status
+
+- name: Check HA status
+  fail: msg=" HA status on {{ ansible_host }} is not True"
+  when: tower_status.json.ha != true
+
+#- name: set api status results a fact
+#- name: "verify that ha is enabled"
+#- name: "verify that number of hosts matches requirements of RabbitMQ cluster (3,5,7...)"
+#- name: "verify that the postgres db is reachable"
+#- name: "verify that rabbitmq status is working"
