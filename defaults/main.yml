@@ -1,5 +1,16 @@
 ---
 # defaults file for verify-tower-setup
 
-tower_ui_mgmt_port: 443
-tower_ui_use_ssl: true
+# These are the same variables found in the Tower setup project
+
+nginx_https_port: 443
+nginx_http_port: 80
+nginx_disable_https: false
+
+# Define the FQDN or IP address of the Postgres database and Postgres port
+# Even though you may have configured postgres streaming replication
+# only one host is reachable at any one time. The pg_host var is defined
+# in the Tower playbook, so when adding this role to the Tower setup playbook
+# just pull these variables from the tower "all:vars" settings.
+# pg_host: ""
+# pg_port: ""

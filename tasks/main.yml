@@ -2,11 +2,15 @@
 # tasks file for verify-tower-setup
 - name: set whether to use http or https
   set_fact:
-    api_url_prefix: "{{ 'https' if tower_ui_use_ssl else 'http' }}"
+    api_url_prefix: "{{ 'http' if nginx_disable_https else 'https' }}"
+
+- name: set the connecting port number to use for the API call
+  set_fact:
+    api_port: "{{ nginx_http_port if nginx_disable_https else nginx_https_port }}"
 
 - name: get tower api version
   uri:
-    url: "{{ api_url_prefix}}://localhost/api/"
+    url: "{{ api_url_prefix}}://localhost:{{ api_port }}/api/"
     validate_certs: false
   register: get_api_version
 
@@ -16,7 +20,7 @@
 
 - name: "get api listing"
   uri:
-    url: "{{ api_url_prefix }}://localhost{{ api_version }}"
+    url: "{{ api_url_prefix }}://localhost:{{ api_port }}{{ api_version }}"
     validate_certs: false
   register: api_groups
 
@@ -26,7 +30,7 @@
 
 - name: get tower status
   uri:
-    url: "{{ api_url_prefix}}://localhost/{{api_ping_uri}}"
+    url: "{{ api_url_prefix}}://localhost:{{ api_port }}/{{api_ping_uri}}"
     validate_certs: false
   register: tower_status
 
@@ -46,7 +50,10 @@
   fail: msg="Number of Nodes in Cluster on {{ ansible_host }} does not match Tower node count in the inventory"
   when: api_tower_node_count != tower_node_count
 
-
+- name: check that tower node  can reach postgres port
+  wait_for:
+    port: "{{ pg_port}}"
+    host: "{{ pg_host }}"
 #- name: set api status results a fact
 #- name: "verify that ha is enabled"
 #- name: "verify that number of hosts matches requirements of RabbitMQ cluster (3,5,7...)"
