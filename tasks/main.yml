@@ -3,9 +3,20 @@
 - name: set whether to use http or https
   set_fact:
     api_url_prefix: "{{ 'https' if tower_ui_use_ssl else 'http' }}"
+
+- name: get tower api version
+  uri:
+    url: "{{ api_url_prefix}}://localhost/api/"
+    validate_certs: false
+  register: get_api_version
+
+- name: set a fact defining the current api version
+  set_fact:
+    api_version: "{{ get_api_version.json.current_version }}"
+
 - name: "get api listing"
   uri:
-    url: "{{ api_url_prefix }}://localhost/api/v1/"
+    url: "{{ api_url_prefix }}://localhost{{ api_version }}"
     validate_certs: false
   register: api_groups
 
@@ -30,7 +41,7 @@
 - name: assign api tower node count as a fact
   set_fact:
     api_tower_node_count: "{{tower_status.json.instances|length}}"
-    
+
 - name: Ensure number of instances listed matches number of Tower nodes
   fail: msg="Number of Nodes in Cluster on {{ ansible_host }} does not match Tower node count in the inventory"
   when: api_tower_node_count != tower_node_count
