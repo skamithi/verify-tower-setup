@@ -1,7 +1,7 @@
 verify-tower-setup
 =========
 
-Playbook to verify tower's setup. Assumes that this is a production system, so contains at least 3 nodes
+Playbook to verify tower's setup. This verification check is for a 3 node setup
 
 Requirements
 ------------
@@ -11,7 +11,7 @@ Requirements
 Role Variables
 --------------
 
-* tower_web_mgmt_port: Usually is 443 or port 80, if ``disable_https`` is used in the tower setup [all:vars] settings. But for whatever reason if the UI mgmt port is changed, make sure this variable reflects that change
+* tower_web_mgmt_port: Default is ``443``. Change this value to ``80``, if ``disable_https=True`` is used in the tower setup [all:vars] settings. 
 
 Dependencies
 ------------
