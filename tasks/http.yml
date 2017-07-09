@@ -1,5 +1,0 @@
- - name: "get api status on port 80"
-
- - name: "verify that ha is enabled"
- - name: "verify that number of hosts matches requirements of RabbitMQ cluster (3,5,7...)
-

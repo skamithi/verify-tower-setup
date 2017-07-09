@@ -1,7 +1,12 @@
 verify-tower-setup
 =========
 
-Playbook to verify tower's setup. This verification check is for a 3 node setup
+Existing Tower verification scripts are not good. This verification role should be in included in the ``install.yml`` of the Tower setup project. It verifies the following
+
+1. Mgmt UI access is available from all Tower nodes
+2. All Tower nodes can connect to the Postgres DB
+3. All Tower nodes are correctly configured into the RabbitMQ cluster
+
 
 Requirements
 ------------
@@ -11,9 +16,18 @@ Requirements
 Role Variables
 --------------
 
-* ``tower_ui_mgmt_port``: Default is ``443``. Change this value to ``80``, if ``disable_https=True`` is used in the tower setup [all:vars] settings.
+* ``nginx_https_port``: Default is ``443``. Matches the variable used in the Tower setup project. If this role is added to a Tower setup, which is the assumption, then it should pick up the value set
+in the project
 
-* ``tower_web_ui_ssl``: Default to ``true``. Set this is false to use the http protocol to access the Tower API
+* ``nginx_http_port``: Default is ``80``. Matches the variable used in the Tower setup project. If this role is added to a Tower setup, which is  the assumption, then it should pick up the value set
+in the project
+
+* ``nginx_disable_https``: Default is ``false``. Matches the variable used in the Tower setup project. If this role is added to a Tower setup, which is  the assumption, then it should pick up the value set
+in the project
+
+* ``rabbitmq_mgmt_user``: Defaults is ``guest``. Used to access ``rabbitmqctl`` output in JSON format
+
+* ``rabbitmq_mgmt_user_password``: Default is ``guest``. Used to access ``rabbitmqctl`` output in JSON format.
 
 Dependencies
 ------------
@@ -23,9 +37,25 @@ None
 Example Playbook
 ----------------
 
-    - hosts: tower
-      roles:
-         - { role: , tower_web_mgmt_port: 80 }
+Place this in the Tower ``install.yml`` at the end like so:
+
+```
+
+- name: "Install Tower node(s)"
+  hosts: tower
+  gather_facts: false
+  roles:
+    - role: packages_el
+    ....
+    ............
+    .................
+
+    - role: misc
+      tags: misc
+      cluster_host_identifier: "{{ rabbitmq_host|default(ansible_host) }}"
+
+    - role: verify-tower-setup
+```
 
 License
 -------
@@ -35,4 +65,4 @@ MIT
 Author Information
 ------------------
 
-stanley at linuxsimba dot com
+Red Hat Consulting

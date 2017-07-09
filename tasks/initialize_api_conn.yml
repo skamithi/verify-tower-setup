@@ -1,0 +1,37 @@
+- name: set whether to use http or https
+  set_fact:
+    api_url_prefix: "{{ 'http' if nginx_disable_https else 'https' }}"
+
+- name: set the connecting port number to use for the API call
+  set_fact:
+    api_port: "{{ nginx_http_port if nginx_disable_https else nginx_https_port }}"
+
+
+- name: get tower api version
+  uri:
+    url: "{{ api_url_prefix}}://localhost:{{ api_port }}/api/"
+    validate_certs: false
+  register: get_api_version
+
+
+- name: set a fact defining the current api version
+  set_fact:
+    api_version: "{{ get_api_version.json.current_version }}"
+
+- name: "Get API core groups to URI mappings"
+  uri:
+    url: "{{ api_url_prefix }}://localhost:{{ api_port }}{{ api_version }}"
+    validate_certs: false
+  register: api_groups
+
+
+- name: set fact for URL to get Tower status
+  set_fact:
+    api_ping_uri: "{{ api_groups.json.ping }}"
+
+
+- name: get tower status
+  uri:
+    url: "{{ api_url_prefix}}://localhost:{{ api_port }}/{{api_ping_uri}}"
+    validate_certs: false
+  register: tower_status

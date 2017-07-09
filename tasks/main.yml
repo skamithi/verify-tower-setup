@@ -1,59 +1,66 @@
 ---
 # tasks file for verify-tower-setup
-- name: set whether to use http or https
-  set_fact:
-    api_url_prefix: "{{ 'http' if nginx_disable_https else 'https' }}"
+- include: initialize_api_conn.yml
+  tags:
+    - check_api_node_count
+    - check_ha_status
 
-- name: set the connecting port number to use for the API call
-  set_fact:
-    api_port: "{{ nginx_http_port if nginx_disable_https else nginx_https_port }}"
-
-- name: get tower api version
-  uri:
-    url: "{{ api_url_prefix}}://localhost:{{ api_port }}/api/"
-    validate_certs: false
-  register: get_api_version
-
-- name: set a fact defining the current api version
-  set_fact:
-    api_version: "{{ get_api_version.json.current_version }}"
-
-- name: "get api listing"
-  uri:
-    url: "{{ api_url_prefix }}://localhost:{{ api_port }}{{ api_version }}"
-    validate_certs: false
-  register: api_groups
-
-- name: set fact for URL to get Tower status
-  set_fact:
-    api_ping_uri: "{{ api_groups.json.ping }}"
-
-- name: get tower status
-  uri:
-    url: "{{ api_url_prefix}}://localhost:{{ api_port }}/{{api_ping_uri}}"
-    validate_certs: false
-  register: tower_status
 
 - name: Check HA status
   fail: msg=" HA status on {{ ansible_host }} is not True"
   when: tower_status.json.ha != true
-
+  tags:
+    - check_ha_status
+    
 - name: assign inventory tower node count as a fact
   set_fact:
     tower_node_count: "{{ groups['tower']|length }}"
+  tags:
+    - check_rabbitmq
+    - check_api_node_count
 
 - name: assign api tower node count as a fact
   set_fact:
     api_tower_node_count: "{{tower_status.json.instances|length}}"
+  tags:
+    - check_api_node_count
 
 - name: Ensure number of instances listed matches number of Tower nodes
   fail: msg="Number of Nodes in Cluster on {{ ansible_host }} does not match Tower node count in the inventory"
   when: api_tower_node_count != tower_node_count
+  tags:
+    - check_api_node_count
 
-- name: check that tower node  can reach postgres port
+- name: check that tower node can reach postgres port
   wait_for:
     port: "{{ pg_port}}"
     host: "{{ pg_host }}"
+  tags:
+    - check_db_conn
+
+# Seems like tower sets the mgmt user to guest:guest. Hardcoding for now
+- name: get rabbitmqctl cluster from the api
+  uri:
+    url: "http://localhost:15672/api/nodes/"
+    method: GET
+    user: "{{ rabbitmq_mgmt_user }}"
+    password: "{{ rabbitmq_mgmt_user_password }}"
+    force_basic_auth: yes
+    status_code: 200,404
+  register: rabbitmqctl_nodes
+  tags: check_rabbitmq
+
+- name: assign rabbitmq cluster node as a fact
+  set_fact:
+    rabbitmq_node_count: "{{ rabbitmqctl_nodes.json|length }}"
+  tags: check_rabbitmq
+
+- name: Check that the number of RabbitMQ nodes == Tower nodes in inventory
+  fail: msg="{{ ansible_host }} is reporting RabbitMQ cluster node count is wrong. Use rabbitmqctl cluster_status to check"
+  when: rabbitmq_node_count != tower_node_count
+  tags: check_rabbitmq
+
+
 #- name: set api status results a fact
 #- name: "verify that ha is enabled"
 #- name: "verify that number of hosts matches requirements of RabbitMQ cluster (3,5,7...)"

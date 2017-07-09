@@ -7,6 +7,10 @@ nginx_https_port: 443
 nginx_http_port: 80
 nginx_disable_https: false
 
+# Rabbitmq mgmt username and password. Default to guest:guest
+rabbitmq_mgmt_user: guest
+rabbitmq_mgmt_user_password: guest
+
 # Define the FQDN or IP address of the Postgres database and Postgres port
 # Even though you may have configured postgres streaming replication
 # only one host is reachable at any one time. The pg_host var is defined
