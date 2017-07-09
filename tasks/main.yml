@@ -23,8 +23,21 @@
   fail: msg=" HA status on {{ ansible_host }} is not True"
   when: tower_status.json.ha != true
 
+- name: assign inventory tower node count as a fact
+  set_fact:
+    tower_node_count: "{{ groups['tower']|length }}"
+
+- name: assign api tower node count as a fact
+  set_fact:
+    api_tower_node_count: "{{tower_status.json.instances|length}}"
+    
+- name: Ensure number of instances listed matches number of Tower nodes
+  fail: msg="Number of Nodes in Cluster on {{ ansible_host }} does not match Tower node count in the inventory"
+  when: api_tower_node_count != tower_node_count
+
+
 #- name: set api status results a fact
 #- name: "verify that ha is enabled"
 #- name: "verify that number of hosts matches requirements of RabbitMQ cluster (3,5,7...)"
-#- name: "verify that the postgres db is reachable"
+#- name: "verify that the postgres dhb is reachable"
 #- name: "verify that rabbitmq status is working"
