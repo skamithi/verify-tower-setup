@@ -11,7 +11,7 @@
   when: tower_status.json.ha != true
   tags:
     - check_ha_status
-    
+
 - name: assign inventory tower node count as a fact
   set_fact:
     tower_node_count: "{{ groups['tower']|length }}"
@@ -46,7 +46,7 @@
     user: "{{ rabbitmq_mgmt_user }}"
     password: "{{ rabbitmq_mgmt_user_password }}"
     force_basic_auth: yes
-    status_code: 200,404
+    status_code: 200
   register: rabbitmqctl_nodes
   tags: check_rabbitmq
 
@@ -59,10 +59,3 @@
   fail: msg="{{ ansible_host }} is reporting RabbitMQ cluster node count is wrong. Use rabbitmqctl cluster_status to check"
   when: rabbitmq_node_count != tower_node_count
   tags: check_rabbitmq
-
-
-#- name: set api status results a fact
-#- name: "verify that ha is enabled"
-#- name: "verify that number of hosts matches requirements of RabbitMQ cluster (3,5,7...)"
-#- name: "verify that the postgres dhb is reachable"
-#- name: "verify that rabbitmq status is working"
