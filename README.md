@@ -5,8 +5,9 @@ Existing Tower verification scripts are not good. This verification role should 
 
 1. Mgmt UI access is available from all Tower nodes
 2. All Tower nodes can connect to the Postgres DB
-3. All Tower nodes are correctly configured into the RabbitMQ cluster
+3. All Tower nodes are listed in the Rabbitmq cluster
 
+This role is future proofed by auto detecting the Tower api version.
 
 Requirements
 ------------
