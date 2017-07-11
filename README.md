@@ -66,5 +66,4 @@ MIT
 
 Author Information
 ------------------
-
-Red Hat Consulting
+Stanley Karunditu
