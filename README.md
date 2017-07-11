@@ -1,10 +1,11 @@
 verify-tower-setup
 =========
 
-Existing Tower verification scripts are not good. This verification role should be in included in the ``install.yml`` of the Tower setup project. It verifies the following
+Existing Tower verification scripts are not good. This verification role should be in included in the ``install.yml`` of the Tower setup project. Existing tower verification does not work to my satisfaction. This role verifies the following:
 
 1. Mgmt UI access is available from all Tower nodes
 2. All Tower nodes can connect to the Postgres DB
+3. API reports Tower HA mode is true
 3. All Tower nodes are listed in the Rabbitmq cluster
 
 This role is future proofed by auto detecting the Tower api version.
