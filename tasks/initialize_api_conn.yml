@@ -32,6 +32,6 @@
 
 - name: get tower status
   uri:
-    url: "{{ api_url_prefix}}://localhost:{{ api_port }}/{{api_ping_uri}}"
+    url: "{{ api_url_prefix}}://localhost:{{ api_port }}{{api_ping_uri}}"
     validate_certs: false
   register: tower_status
