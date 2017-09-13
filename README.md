@@ -8,7 +8,7 @@ Existing Tower verification scripts are not good. This verification role should 
 3. API reports Tower HA mode is true
 3. All Tower nodes are listed in the Rabbitmq cluster
 
-This role is future proofed by auto detecting the Tower api version.
+This role is future proofed by auto detecting the Tower API version.
 
 Requirements
 ------------
@@ -66,5 +66,4 @@ MIT
 
 Author Information
 ------------------
-
-Red Hat Consulting
+Stanley Karunditu
