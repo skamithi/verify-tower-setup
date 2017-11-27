@@ -39,25 +39,22 @@ None
 Example Playbook
 ----------------
 
-Place this in the Tower ``install.yml`` at the end like so:
+Create a new playbook in the ansible tower setup directory. Call it ``verify.yml``
 
 ```
-
-- name: "Install Tower node(s)"
+-
   hosts: tower
   gather_facts: false
   roles:
-    - role: packages_el
-    ....
-    ............
-    .................
-
-    - role: misc
-      tags: misc
-      cluster_host_identifier: "{{ rabbitmq_host|default(ansible_host) }}"
-
     - role: verify-tower-setup
 ```
+
+Then run the playbook
+
+```
+ansible-playbook -i inventory verify.yml
+```
+
 
 License
 -------
