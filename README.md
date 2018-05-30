@@ -42,8 +42,8 @@ Example Playbook
 Create a new playbook in the ansible tower setup directory. Call it ``verify.yml``
 
 ```
--
-  hosts: tower
+---
+- hosts: tower
   gather_facts: false
   roles:
     - role: verify-tower-setup
